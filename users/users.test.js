@@ -1,4 +1,4 @@
-import { test, expect, describe, it } from "vitest";
+import { test, expect, describe, it, expectTypeOf } from "vitest";
 import request from "supertest";
 import app from "../app.js";
 import { resetUsersTable } from "../db/helpers.js";
@@ -24,11 +24,12 @@ describe("GET /api/users", function () {
 
     expect(typeof response.body).toBe("object");
     expect(response.body.success).toBe(true);
-    expect(Array.isArray(response.body.payload)).toBe(true);
+    // Array.isArray
+    expectTypeOf(response.body.payload).toBeArray();
 
     response.body.payload.forEach((user) => {
       expect(typeof user.id).toBe("number");
-      expect(typeof user.username).toBe("string");
+      expect(user.username).toBeTypeOf("string");
     });
   });
 });
