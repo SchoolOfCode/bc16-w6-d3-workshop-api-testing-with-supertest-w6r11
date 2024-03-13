@@ -1,6 +1,7 @@
 import { test, expect, describe, it } from "vitest";
 import request from "supertest";
 import app from "../app.js";
+import { resetUsersTable } from "../db/helpers.js";
 
 test("GET/api/health works", () => {});
 
@@ -11,6 +12,24 @@ describe("GET /api/health", function () {
     expect(response.status).toEqual(200);
     expect(response.body.success).toBe(true);
     expect(response.body.payload).toEqual("API is running correctly");
+  });
+});
+
+describe("GET /api/users", function () {
+  it("get all users with assertion", async function () {
+    await resetUsersTable();
+    const response = await request(app).get("/api/users");
+    expect(response.headers["content-type"]).toMatch(/json/);
+    expect(response.status).toEqual(200);
+
+    expect(typeof response.body).toBe("object");
+    expect(response.body.success).toBe(true);
+    expect(Array.isArray(response.body.payload)).toBe(true);
+
+    response.body.payload.forEach((user) => {
+      expect(typeof user.id).toBe("number");
+      expect(typeof user.username).toBe("string");
+    });
   });
 });
 
